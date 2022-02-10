@@ -11,7 +11,12 @@ if(file_exists($filename)) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $_POST = filter_input_array(INPUT_POST, [
+        "todo" => [
+            "filter" => FILTER_SANITIZE_STRING,
+            "flags" => FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_BACKTICK
+        ]
+    ]);
     $todo = $_POST['todo'] ?? '';
 
     if (!$todo) {
@@ -26,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'done' => false, 
         'id' => time()
         ]];
-        file_put_contents($filename, json_encode($todos));
+        file_put_contents($filename, json_encode($todos, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
     }
 }
 ?>
