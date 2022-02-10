@@ -3,7 +3,9 @@ const ERROR_REQUIRED = 'Veuillez renseigner une todo';
 const ERROR_TOO_SHORT = 'Veuillez entrer au moins 5 caractères';
 $filename = __DIR__ . "/data/todos.json";
 $error = '';
+$todo = "";
 $todos = [];
+
 
 if(file_exists($filename)) {
     $data = file_get_contents($filename);
@@ -13,7 +15,7 @@ if(file_exists($filename)) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_POST = filter_input_array(INPUT_POST, [
         "todo" => [
-            "filter" => FILTER_SANITIZE_STRING,
+            "filter" => FILTER_UNSAFE_RAW, // FILTER SANITIZE STRING is deprecated so we replace with Unsafe RAW. However it's best to use htmlspecialchars if we look for protection against XSS
             "flags" => FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_BACKTICK
         ]
     ]);
@@ -57,13 +59,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="todo-container">
                 <h1>Ma Todo</h1>
                 <form class="todo-form" action="/" method="post">
-                    <input name="todo" type="text">
-                    <button class="btn btn-primary">Ajouter</button>
+                    <input value="<?= $todo ?>" name="todo" type="text">
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
                 </form>
                 <?php if ($error) : ?>
                     <p class="text-danger"><?= $error ?></p>
                 <?php endif; ?>
-                <div class="todo-list"></div>
+                <ul class="todo-list">
+                    <?php foreach($todos as $t) : ?>
+                        <li class="todo-item">
+                            <span class = "todo-name"><?= $t['name'] ?></span>
+                            <button class = "btn btn-primary btn-small">Valider</button>
+                            <button class = "btn btn-danger btn-small">Supprimer</button>
+                        </li>
+                    <?php endforeach; ?>
+
+                </ul>
             </div>
 
         </div>
