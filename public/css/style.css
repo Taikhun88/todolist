@@ -84,6 +84,10 @@ btn-small {
     padding: 5px 10px;
 }
 
+.low-opacity {
+    opacity: 0.5;
+}
+
 header {
     background-color: var(--primary);
     padding: 1.5rem;

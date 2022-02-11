@@ -7,7 +7,7 @@ $todo = "";
 $todos = [];
 
 
-if(file_exists($filename)) {
+if (file_exists($filename)) {
     $data = file_get_contents($filename);
     $todos = json_decode($data, true) ?? [];
 }
@@ -29,11 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$error) {
         $todos = [...$todos, [
-        'name' => $todo,
-        'done' => false, 
-        'id' => time()
+            'name' => $todo,
+            'done' => false,
+            'id' => time()
         ]];
         file_put_contents($filename, json_encode($todos, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        header('Location: /');
     }
 }
 ?>
@@ -66,11 +67,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p class="text-danger"><?= $error ?></p>
                 <?php endif; ?>
                 <ul class="todo-list">
-                    <?php foreach($todos as $t) : ?>
-                        <li class="todo-item">
-                            <span class = "todo-name"><?= $t['name'] ?></span>
-                            <button class = "btn btn-primary btn-small">Valider</button>
-                            <button class = "btn btn-danger btn-small">Supprimer</button>
+                    <?php foreach ($todos as $t) : ?>
+                        <li class="todo-item <?= $t['done'] ? 'low-opacity' : '' ?>">
+                            <span class="todo-name"><?= $t['name'] ?></span>
+                            <a href="/edit-todo.php?id=<?= $t['id'] ?>">
+                                <button class="btn btn-primary btn-small"><?= $t['done'] ? 'Annuler' : 'Valider' ?></button>
+                            </a>
+                            <a href="/remove-todo.php?id=<?= $t['id'] ?>">
+                                <button class="btn btn-danger btn-small">Supprimer</button>
+                            </a>
                         </li>
                     <?php endforeach; ?>
 
